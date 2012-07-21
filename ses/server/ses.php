@@ -17,7 +17,7 @@ function ses_init()
 	ActiveRecord\Config::initialize(function($cfg)
 	{
 		global $SES_SQL;
-		$cfg->set_model_directory('models/');
+		$cfg->set_model_directory(dirname(__FILE__).'/models/');
 		$cfg->set_connections(array('development' => $SES_SQL));
 	});
 }
@@ -180,7 +180,7 @@ function ses_query_all_semail($server, $id)
 	{
 		// send the create
 
-		ses_query_create($server, $o->commandkey, $o->owneraddress, $id, $o->type, $o->list, $o->readonly, $o->tags);
+		ses_query_create($server, $o->commandkey, $o->owneraddress, $id, $o->type, $o->list, $o->readonly, $o->tags, $o->datecreated->format('Y-m-d H:i:s'));
 		
 		
 		// send the invits
@@ -189,7 +189,7 @@ function ses_query_all_semail($server, $id)
 		
 		foreach($listpar as $l)
 		{
-			ses_query_invit($server, $l->commandkey, $l->commandsender, $id, $l->address);
+			ses_query_invit($server, $l->commandkey, $l->commandsender, $id, $l->address, $l->dateinvited->format('Y-m-d H:i:s'));
 		}
 		
 		
@@ -205,6 +205,128 @@ function ses_query_all_semail($server, $id)
 	}
 }
 
+
+// return the last active semails of an address
+function ses_getlastsemails($address, $from, $limit)
+{
+	$address = Semail::connection()->escape($address);
+	$from = intval($from);
+	$limit = intval($limit);
+	
+	$listsemail = Semail::find_by_sql(
+	"select s.* from ses_semail s, ses_participant p
+	where p.semail_id = s.id AND p.address = $address
+	order by dateactive desc, datecreated desc
+	limit $from, $limit"
+);
+
+	return $listsemail;
+}
+
+
+// return the most recent message
+function ses_getlastmessage($id)
+{
+	$o = Message::first(array('conditions' => array("semail_id = ?", $id), 'order' => 'datesent desc'));
+	
+	return $o;
+}
+
+
+// return the date of the most recent message or the date of creation (used for AJAX)
+function ses_getdateactive($id)
+{
+	$ret = null;
+	
+	$o = Semail::find($id);
+	
+	if($o)
+		$ret = $o->dateactive->format('Y-m-d H:i:s');
+	
+	return $ret;
+}
+
+
+// return a list of changed SeMails
+function ses_bigping($idlist, $lastlist)
+{
+	/*var_dump($idlist);
+	echo "\n\n";
+	var_dump($lastlist);*/
+
+	$ret = array();
+	
+	$s = count($idlist);
+	
+	for($i = 0 ; $i < $s ; $i++)
+	{
+		$id = $idlist[$i];
+		$last = $lastlist[$i];
+		
+		$list = Semail::all(array('conditions' => array("id = ? and dateactive > ?", $id, $last)));
+		
+		foreach($list as $sm)
+		{
+			$ret[] = $sm->id;
+		}
+	}
+	
+	
+	return $ret;
+}
+
+
+
+// make an user follow an other user
+function ses_follow($useraddress, $contactaddress, $name = "")
+{
+	$user = User::find(array('conditions' => array("address = ?", $useraddress)));
+	
+	if(($user != null) && (ses_isaddress($contactaddress)) && (!ses_isfollowing($useraddress, $contactaddress)))
+	{
+		$id = $user->id;
+		
+		$o = Contact::create(array("address" => $contactaddress, "name" => $name, "user_id" => $id));
+		$o->save();
+	}
+}
+
+
+// make an user unfollow an other user
+function ses_unfollow($useraddress, $contactaddress)
+{
+	$user = User::find(array('conditions' => array("address = ?", $useraddress)));
+	
+	if(($user != null) && (ses_isaddress($contactaddress)))
+	{
+		$id = $user->id;
+		
+		$o = Contact::find(array('conditions' => array("address = ? and user_id = ?", $contactaddress, $id)));
+		
+		if($o != null)
+			$o->delete();
+	}
+}
+
+
+// return if an user is following an other user
+function ses_isfollowing($useraddress, $contactaddress)
+{
+	$ret = false;
+	
+	$user = User::find(array('conditions' => array("address = ?", $useraddress)));
+	
+	if(($user != null) && (ses_isaddress($contactaddress)))
+	{
+		$id = $user->id;
+		
+		$o = Contact::find(array('conditions' => array("address = ? and user_id = ?", $contactaddress, $id)));
+		
+		$ret = ($o != null);
+	}
+
+	return $ret;
+}
 
 
 
@@ -225,16 +347,16 @@ function ses_query_all_semail($server, $id)
 // create
 
 
-function ses_create($key, $sender, $id, $type, $list, $readonly, $tags)
+function ses_create($key, $sender, $id, $type, $list, $readonly, $tags, $datecreated)
 {
 	// create the semail
 
-	$o = Semail::create(array("id" => $id, "type" => $type, "owneraddress" => $sender, "commandkey" => $key, "readonly" => $readonly, "tags" => $tags, "list" => $list));
+	$o = Semail::create(array("id" => $id, "type" => $type, "owneraddress" => $sender, "commandkey" => $key, "readonly" => $readonly, "tags" => $tags, "list" => $list, "datecreated" => $datecreated, "dateactive" => $datecreated));
 	$o->save();
 
 	// create the participants from the list
 	
-	ses_invit("", $sender, $id, $sender);
+	ses_invit("", $sender, $id, $sender, $datecreated);
 
 	$expl = explode(";", $list);
 	foreach($expl as $p)
@@ -243,24 +365,27 @@ function ses_create($key, $sender, $id, $type, $list, $readonly, $tags)
 		
 		if($pa != "" && ses_isaddress($pa))
 		{
-			ses_invit("", $sender, $id, $pa);
+			ses_invit("", $sender, $id, $pa, $datecreated);
 		}
 	}
 }
 
-function ses_query_create($server, $key, $sender, $id, $type, $list, $readonly, $tags)
+function ses_query_create($server, $key, $sender, $id, $type, $list, $readonly, $tags, $datecreated)
 {
     //$server = ses_getserver($dest);
-	$url = "http://$server/ses/server/create?id=$id&key=$key&sender=$sender&type=$type&list=$list&readonly=$readonly&tags=$tags";
+	
+	$datecreated = urlencode($datecreated);
+	
+	$url = "http://$server/ses/server/create?id=$id&key=$key&sender=$sender&type=$type&list=$list&readonly=$readonly&tags=$tags&datecreated=$datecreated";
 
 	return file_get_contents($url);
 }
 
-function ses_prepare_create($sender, $type, $list, $readonly, $tags)
+function ses_prepare_create($sender, $type, $list, $readonly, $tags, $datecreated)
 {
     $id = ses_id($sender, $type, $list);
-	$key = ses_key("create::".$type."::".$list."::".$readonly."::".$tags, $id, $sender);
-	$sum = ses_sum("create::".$type."::".$list."::".$readonly."::".$tags, $id, $sender);
+	$key = ses_key("create::".$type."::".$list."::".$readonly."::".$tags."::".$datecreated, $id, $sender);
+	$sum = ses_sum("create::".$type."::".$list."::".$readonly."::".$tags."::".$datecreated, $id, $sender);
 	
 	$o = Validate::create(array("key" => $key, "md5sum" => $sum));
 	$o->save();
@@ -273,7 +398,7 @@ function ses_prepare_create($sender, $type, $list, $readonly, $tags)
 // invit
 
 
-function ses_invit($key, $sender, $id, $address)
+function ses_invit($key, $sender, $id, $address, $dateinvited)
 {
 	// if the sender is a participant and On invit SeMail
 	// or Private SeMail and the sender is the owner
@@ -284,23 +409,30 @@ function ses_invit($key, $sender, $id, $address)
 
 	if(($alreadyin == null) && (($ip && $type == 1) ||($io && $type == 2)))
 	{
-		$o = Participant::create(array("address" => $address, "semail_id" => $id, "commandkey" => $key, "commandsender" => $sender));
+		$sm = Semail::find($id);
+		$sm->dateactive = $dateinvited;
+		$sm->save();
+		
+		$o = Participant::create(array("address" => $address, "semail_id" => $id, "commandkey" => $key, "commandsender" => $sender, "dateinvited" => $dateinvited));
 		$o->save();
 	}
 }	
 
-function ses_query_invit($server, $key, $sender, $id, $address)
+function ses_query_invit($server, $key, $sender, $id, $address, $dateinvited)
 {
     //$server = ses_getserver($dest);
-	$url = "http://$server/ses/server/invit?id=$id&key=$key&sender=$sender&address=$address";
+	
+	$dateinvited = urlencode($dateinvited);
+	
+	$url = "http://$server/ses/server/invit?id=$id&key=$key&sender=$sender&address=$address&dateinvited=$dateinvited";
 
 	return file_get_contents($url);
 }
 
-function ses_prepare_invit($sender, $id, $address)
+function ses_prepare_invit($sender, $id, $address, $dateinvited)
 {
-	$key = ses_key("invit::".$address, $id, $sender);
-	$sum = ses_sum("invit::".$address, $id, $sender);
+	$key = ses_key("invit::".$address."::".$dateinvited, $id, $sender);
+	$sum = ses_sum("invit::".$address."::".$dateinvited, $id, $sender);
 	
 	$o = Validate::create(array("key" => $key, "md5sum" => $sum));
 	$o->save();
@@ -354,7 +486,7 @@ function ses_delete($sender, $id)
 function ses_getfeed($address, $from, $limit)
 {
 	$tab = array();
-	$listsemail = Semail::all(array('conditions' => array("owneraddress = ? AND type = '0'", $address), 'offset' => $from, 'limit' => $limit));
+	$listsemail = Semail::all(array('conditions' => array("owneraddress = ? AND type = '0'", $address), 'order' => 'datecreated desc','offset' => $from, 'limit' => $limit));
 	
 	foreach($listsemail as $lsm)
 	{
@@ -367,7 +499,7 @@ function ses_getfeed($address, $from, $limit)
 		}
 		
 
-		$tab[] = array("id" => $lsm->id, "readonly" => $lsm->readonly, "tags" => $lsm->tags, "messages" => $tabmsg);
+		$tab[] = array("id" => $lsm->id, "readonly" => $lsm->readonly, "tags" => $lsm->tags, "datecreated" => $lsm->datecreated->format('Y-m-d H:i:s'), "messages" => $tabmsg);
 	}
 	
 	return json_encode($tab);
@@ -396,6 +528,10 @@ function ses_message($key, $sender, $id, $message, $datesent)
 	$ro = ses_getreadonly($id);
 	if((!$ro || $io) && ($ip || $type == 0))
 	{
+		$sm = Semail::find($id);
+		$sm->dateactive = $datesent;
+		$sm->save();
+		
 		$o = Message::create(array("content" => $message, "datesent" => $datesent, "address" => $sender, "semail_id" => $id, "commandkey" => $key));
 		$o->save();
 	}

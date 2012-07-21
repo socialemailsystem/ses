@@ -26,24 +26,26 @@ if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
 	
 	
 	// create a new SeMail
-	if($action == "create" && isset($_GET["type"]) && isset($_GET["list"]) && isset($_GET["readonly"]) && isset($_GET["tags"]))
+	if($action == "create" && isset($_GET["type"]) && isset($_GET["list"]) && isset($_GET["readonly"]) && isset($_GET["tags"]) && isset($_GET["datecreated"]))
 	{
 	    $type = $_GET["type"]; // semail type (0 : public, 1 : on invit, 2 : private)
 		$list = $_GET["list"]; // list of addresses (ex : "johndoe::server1.com ; darkvador::server2.com")
 		$readonly = $_GET["readonly"]; // read only (only the owner can send messages)
 		$tags = $_GET["tags"]; // tags
+		$datecreated = $_GET["datecreated"]; // date of creation
 
-		if(ses_validate(ses_sum("create::".$type."::".$list."::".$readonly."::".$tags, $id, $sender), $key, $server))
-			ses_create($key, $sender, $id, $type, $list, $readonly, $tags);
+		if(ses_validate(ses_sum("create::".$type."::".$list."::".$readonly."::".$tags."::".$datecreated, $id, $sender), $key, $server))
+			ses_create($key, $sender, $id, $type, $list, $readonly, $tags, $datecreated);
 	}
 	
 	// invit someone in a SeMail
-	else if($action == "invit" && isset($_GET["address"]))
+	else if($action == "invit" && isset($_GET["address"]) && isset($_GET["dateinvited"]))
 	{
 	    $address = $_GET["address"]; // address to invit
+		$dateinvited = $_GET["dateinvited"]; // date of invit
 
-		if(ses_validate(ses_sum("invit::".$address, $id, $sender), $key, $server))
-			ses_invit($key, $sender, $id, $address);
+		if(ses_validate(ses_sum("invit::".$address."::".$dateinvited, $id, $sender), $key, $server))
+			ses_invit($key, $sender, $id, $address, $dateinvited);
 	}
 	
 	// get the last public SeMails of someone

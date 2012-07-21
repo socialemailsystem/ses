@@ -1,0 +1,141 @@
+
+
+.row0, .row1 {
+	width: 100%;
+	display: inline-block;
+	min-height: 20px;
+	padding: 10px;
+	padding-right: 0;
+	/*padding-top: 0;*/
+}
+
+
+.row0 {
+	background-color: #d9ead3;
+}
+
+.row1 {
+	background-color: #c9daf8;
+}
+
+.rowclickable {
+	background-color: red;
+}
+
+
+.someaddress {
+	font-weight: bold;
+	/*color: #4269aa;*/
+	/*color: #42bb42;*/
+}
+
+.somedate {
+	/*text-decoration: underline;*/
+}
+
+.somequote {
+	font-style: italic;
+}
+
+a .sometag {
+	font-weight: bold;
+	color: red;
+	text-decoration: none;
+}
+
+a .someparticipant {
+	font-weight: bold;
+	color: green;
+	font-size: 10px;
+	text-decoration: none;
+}
+
+
+a:hover .sometag , a:hover .someparticipant {
+	/*text-decoration: underline;*/
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+}
+
+.somecontent {
+	margin-top: 10px;
+	word-wrap: break-word;
+}
+
+.followed:hover {
+	/*border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #993300;
+	border-right-width: 1px;
+	border-right-style: dotted;
+	border-left-width: 1px;
+	border-left-style: dotted;*/
+	text-decoration: underline;
+}
+
+.notfollowed:hover {
+
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	/*text-decoration: underline;*/
+	/*border-bottom-width: 1px;
+	border-bottom-style: dotted;*/
+}
+
+
+.semailwin {
+	font-size: 11px;
+}
+
+
+.tagslist {
+	float: right;
+	margin-right: 10px;
+	padding-top: 5px;
+}
+
+
+.headmsg {
+	position: relative;
+	float: right;
+	padding-right: 10px;
+	background-color: #ffffaa;
+	top: -10px;
+}
+
+
+.sendbox {
+	/*text-align: center;*/
+}
+
+
+.msgarea {
+	position: absolute;
+	width: 70%;
+	height: 100px;
+}
+
+.sendbut {
+	position: absolute;
+	width: 20%;
+	height: 105px;
+	float: right;
+	
+}
+
+
+.typesm {
+	float: right;
+	font-style: italic;
+}
+
+
+#tabs {
+	font-size: 11px;
+}
+
