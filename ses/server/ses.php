@@ -67,7 +67,8 @@ function ses_getserver($address)
 // ask the sender's server if the sum is ok
 function ses_validate($sum, $key, $server)
 {
-	//return true;
+	/*if(!ses_checkserver($server))
+		return false;*/
 		
 	$url = "http://$server/ses/server/validate?id=0&key=$key&sender=0";
 	$serversum = file_get_contents($url);
@@ -215,7 +216,13 @@ function ses_getlastsemails($address, $from, $limit)
 	
 	$listsemail = Semail::find_by_sql(
 	"select s.* from ses_semail s, ses_participant p
-	where p.semail_id = s.id AND p.address = $address
+	where (p.semail_id = s.id AND p.address = $address)
+	
+	UNION
+	
+	select * from ses_semail
+	where type = '0'
+	
 	order by dateactive desc, datecreated desc
 	limit $from, $limit"
 );
@@ -250,10 +257,6 @@ function ses_getdateactive($id)
 // return a list of changed SeMails
 function ses_bigping($idlist, $lastlist)
 {
-	/*var_dump($idlist);
-	echo "\n\n";
-	var_dump($lastlist);*/
-
 	$ret = array();
 	
 	$s = count($idlist);
@@ -284,6 +287,9 @@ function ses_follow($useraddress, $contactaddress, $name = "")
 	
 	if(($user != null) && (ses_isaddress($contactaddress)) && (!ses_isfollowing($useraddress, $contactaddress)))
 	{
+		if(!ses_checkserver(ses_getserver($contactaddress)))
+			return false;
+			
 		$id = $user->id;
 		
 		$o = Contact::create(array("address" => $contactaddress, "name" => $name, "user_id" => $id));
@@ -326,6 +332,43 @@ function ses_isfollowing($useraddress, $contactaddress)
 	}
 
 	return $ret;
+}
+
+
+// return all contacts of an user
+function ses_getcontacts($useraddress)
+{
+	$ret = array();
+	
+	$user = User::find(array('conditions' => array("address = ?", $useraddress)));
+	
+	if($user != null)
+	{
+		$list = Contact::all(array('conditions' => array("user_id = ?", $user->id)));
+
+		if($list != null)
+		{
+			foreach($list as $l)
+			{
+				$ret[] = $l->address;
+			}
+		}
+	}
+	
+	return $ret;
+}
+
+
+// return if a server exist
+function ses_checkserver($server)
+{
+	return (fopen ("http://$server/ses/", "r") != null);
+	
+	/*$expl = explode("/", $server);
+	$server = $expl[0];
+	return (fsockopen($server, 80, $errno, $errstr, 2) != false);*/
+	
+	//return checkdnsrr($server);
 }
 
 
@@ -374,6 +417,9 @@ function ses_query_create($server, $key, $sender, $id, $type, $list, $readonly, 
 {
     //$server = ses_getserver($dest);
 	
+	/*if(!ses_checkserver($server))
+		return false;*/
+	
 	$datecreated = urlencode($datecreated);
 	
 	$url = "http://$server/ses/server/create?id=$id&key=$key&sender=$sender&type=$type&list=$list&readonly=$readonly&tags=$tags&datecreated=$datecreated";
@@ -400,6 +446,9 @@ function ses_prepare_create($sender, $type, $list, $readonly, $tags, $datecreate
 
 function ses_invit($key, $sender, $id, $address, $dateinvited)
 {
+	if(!ses_checkserver(ses_getserver($address)))
+		return false;
+		
 	// if the sender is a participant and On invit SeMail
 	// or Private SeMail and the sender is the owner
 	$ip = ses_isparticipant($sender, $id);
@@ -421,6 +470,9 @@ function ses_invit($key, $sender, $id, $address, $dateinvited)
 function ses_query_invit($server, $key, $sender, $id, $address, $dateinvited)
 {
     //$server = ses_getserver($dest);
+	
+	/*if(!ses_checkserver($server))
+		return false;*/
 	
 	$dateinvited = urlencode($dateinvited);
 	
@@ -508,8 +560,42 @@ function ses_getfeed($address, $from, $limit)
 function ses_query_getfeed($address, $from, $limit)
 {
     $server = ses_getserver($address);
+	
+	/*if(!ses_checkserver($server))
+		return false;*/
 
 	$url = "http://$server/ses/server/getfeed?id=0&key=0&sender=0&address=$address&from=$from&limit=$limit";
+
+	return file_get_contents($url);
+}
+
+
+
+// getprofile
+
+
+function ses_getprofile($address)
+{
+	$tab = array();
+
+	$o = User::find(array('conditions' => array("address = ? ", $address)));
+
+	if($o != null)
+	{
+		$tab = array("mail" => $o->mail);
+	}
+	
+	return json_encode($tab);
+}
+
+function ses_query_getprofile($address)
+{
+    $server = ses_getserver($address);
+	
+	/*if(!ses_checkserver($server))
+		return false;*/
+
+	$url = "http://$server/ses/server/getprofile?id=0&key=0&sender=0&address=$address";
 
 	return file_get_contents($url);
 }
@@ -540,6 +626,10 @@ function ses_message($key, $sender, $id, $message, $datesent)
 function ses_query_message($server, $key, $sender, $id, $message, $datesent)
 {
     //$server = ses_getserver($dest);
+	
+	/*if(!ses_checkserver($server))
+		return false;*/
+		
 	$message = urlencode($message);
 	$datesent = urlencode($datesent);
 	$url = "http://$server/ses/server/message?id=$id&key=$key&sender=$sender&message=$message&datesent=$datesent";

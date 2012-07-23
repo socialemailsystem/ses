@@ -75,6 +75,11 @@ echo ses_query_getfeed($address, $from, $limit);
 echo '<br />"<br /><br />';
 
 
+echo "<br /> Profile : <br />";
+var_dump(ses_query_getprofile($address));
+echo '<br />"<br /><br />';
+
+
 $address = "tests2::$SES_SERVER";
 $from = "0";
 $limit = "10";
@@ -89,8 +94,9 @@ echo '<br />"<br /><br />';
 
 $useraddress = "tests::$SES_SERVER";
 $contactaddress = "tests42::$SES_SERVER";
+$mail = "jdbasic@gmail.com";
 
-//User::create(array("address" => $useraddress, "pwd" => "aaa"));
+//User::create(array("address" => $useraddress, "pwd" => "aaa", "mail" => $mail));
 
 echo "<br /><br />$useraddress is following $contactaddress : ";
 echo ses_isfollowing($useraddress, $contactaddress);
@@ -101,6 +107,11 @@ echo ses_isfollowing($useraddress, $contactaddress);
 echo "<br /><br />$useraddress is following $contactaddress : ";
 echo ses_isfollowing($useraddress, $contactaddress);
 echo '<br /><br /><br />';
+
+
+$address = "tests::$SES_SERVER";
+echo "<br />Contacts :<br />";
+var_dump (ses_getcontacts($address));
 
 
 ?>

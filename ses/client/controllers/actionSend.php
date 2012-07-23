@@ -20,18 +20,32 @@ $id = $_GET["id"];
 $msg = $_GET["msg"];
 
 
-$datesent = date("Y-m-d H:i:s");
-$sender = $SES_ADDRESS;
-//$sender = "imspeaking::$SES_SERVER";
-
-$listservers = ses_listservers($id);
-
-$keymsg = ses_prepare_message($sender, $id, $msg, $datesent); // create key
-
-// for each participating server
-foreach($listservers as $s)
+$o = Semail::find($id);
+if($o != null)
 {
-	ses_query_message($s, $keymsg, $sender, $id, $msg, $datesent); // send message
+	$type = $o->type;
+	
+	$datesent = date("Y-m-d H:i:s");
+	$sender = $SES_ADDRESS;
+	
+	$keymsg = ses_prepare_message($sender, $id, $msg, $datesent); // create key
+	
+	if($type == "0")
+	{
+		$s = ses_getserver($o->owneraddress);
+		ses_query_message($s, $keymsg, $sender, $id, $msg, $datesent); // send message
+	}
+	
+	else
+	{
+		$listservers = ses_listservers($id);
+
+		// for each participating server
+		foreach($listservers as $s)
+		{
+			ses_query_message($s, $keymsg, $sender, $id, $msg, $datesent); // send message
+		}
+	}
 }
 
 

@@ -6,6 +6,8 @@
 
 //require_once("config.php");
 
+//require_once("client_functions.php");
+
 
 
 $SES_TITLE = "Social eMail System - Beyond eMail and social network";
@@ -18,7 +20,9 @@ $SES_CSS = array (
 	"jquery.noty.css",
 	"noty_theme_mitgux.css",
 	"cupertino/jquery-ui-1.8.21.custom.css",
-	"defaultnotif.css"
+	"defaultnotif.css",
+	"jquery.qtip.min.css",
+	"nbbc.css"
 );
 
 $SES_JS = array (
@@ -30,14 +34,18 @@ $SES_JS = array (
 	"promise.js",
 	"jquery.noty.js",
 	"notification.js",
-	"jquery.caret.1.02.js"
+	"jquery.caret.1.02.js",
+	"jquery.qtip.min.js"
 );
 
 
-$SES_ADDRESS = "tests::$SES_SERVER";
-//$SES_ADDRESS = $_SESSION["SES_ADDRESS"];
+//$SES_ADDRESS = "tests::$SES_SERVER";
+$SES_ADDRESS = "";
 
 $SES_FREQPING = 3500;
+
+
+//error_reporting(0);
 
 
 ?>

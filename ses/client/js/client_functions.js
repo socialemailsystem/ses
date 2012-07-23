@@ -29,7 +29,8 @@ function showwin(name, title, urlview, fct)
 			width: '500',
 			height: '400',
 			minWidth: '350',
-			minHeight: '200'
+			minHeight: '200',
+			closeOnEscape: true
 		});
 	
 	$.ajax({
@@ -167,10 +168,8 @@ function bigping(freqping)
 					// save message and caret position
 					var msgarea = $("#msg" + shortid);
 					var msg = msgarea.val();
-					//var pos = msgarea.caret().start;
 					var pos = doGetCaretPosition(document.getElementById("msg" + shortid));
-					
-					
+
 					
 					updatewin(name, "controllers/viewSemail.php?id=" + json[i], function () {
 						var msgarea = $("#msg" + shortid);
@@ -266,4 +265,27 @@ function askfollow(user, contact)
 		
 	});
 	
+}
+
+
+function tiptip()
+{
+	$('a[title]').qtip({
+		overwrite: false,
+		
+		show: {
+				delay: 1000
+			},
+			
+		style: {
+			classes: 'ui-tooltip-blue ui-tooltip-shadow ui-tooltip-rounded'
+		}
+	});
+}
+
+
+function invitpeople(id)
+{
+	showwin("invitwin", "Invit people to a SeMail", "controllers/viewSelectpeople.php?id=" + id, function(msg) {
+	});
 }

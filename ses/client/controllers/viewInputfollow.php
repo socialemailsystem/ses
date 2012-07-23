@@ -10,20 +10,11 @@ include "../client_functions.php";
 ses_init();
 
 
-if(!isset($_GET["nbrsemails"]))
-{
-	die();
-}
 
-$nbrsemails = intval($_GET["nbrsemails"]);
-
-
-
-$lastsemails = ses_getlastsemails("$SES_ADDRESS", 0, $nbrsemails);
-
+$user = $SES_ADDRESS;
 
 
 // call the view
-include "../views/main.php";
+include "../views/inputfollow.php";
 
 ?>

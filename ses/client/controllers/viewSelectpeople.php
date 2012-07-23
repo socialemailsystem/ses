@@ -10,20 +10,24 @@ include "../client_functions.php";
 ses_init();
 
 
-if(!isset($_GET["nbrsemails"]))
+
+if(!isset($_GET["id"]))
 {
 	die();
 }
 
-$nbrsemails = intval($_GET["nbrsemails"]);
+
+$id = $_GET["id"];
+$shortid = substr($id,0,20);
 
 
+$user = $SES_ADDRESS;
 
-$lastsemails = ses_getlastsemails("$SES_ADDRESS", 0, $nbrsemails);
+$listcontact = ses_getcontacts($user);
 
 
 
 // call the view
-include "../views/main.php";
+include "../views/selectpeople.php";
 
 ?>

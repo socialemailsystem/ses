@@ -5,7 +5,7 @@
 
 
 
-$actions = array("create", "invit", "getfeed", "message", "validate");
+$actions = array("create", "invit", "getfeed", "getprofile", "message", "validate");
 
 if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
    && isset($_GET["key"]) && isset($_GET["sender"]) && isset($_GET["id"]))
@@ -56,6 +56,14 @@ if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
 		$limit = $_GET["limit"]; // limit
 		
 		echo ses_getfeed($address, $from, $limit);
+	}
+	
+	// get a profile
+	else if($action == "getprofile" && isset($_GET["address"]))
+	{
+	    $address = $_GET["address"]; // user address
+
+		echo ses_getprofile($address);
 	}
 	
 	// send a message

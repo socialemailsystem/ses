@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le : Mar 17 Juillet 2012 à 22:21
+-- Généré le : Lun 23 Juillet 2012 à 22:16
 -- Version du serveur: 5.5.16
 -- Version de PHP: 5.3.8
 
@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS `ses_user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `address` varchar(128) NOT NULL,
   `pwd` varchar(128) NOT NULL,
+  `mail` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `address` (`address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

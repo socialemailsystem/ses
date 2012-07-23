@@ -6,7 +6,6 @@
 	min-height: 20px;
 	padding: 10px;
 	padding-right: 0;
-	/*padding-top: 0;*/
 }
 
 
@@ -25,8 +24,6 @@
 
 .someaddress {
 	font-weight: bold;
-	/*color: #4269aa;*/
-	/*color: #42bb42;*/
 }
 
 .somedate {
@@ -35,56 +32,66 @@
 
 .somequote {
 	font-style: italic;
-}
-
-a .sometag {
-	font-weight: bold;
-	color: red;
-	text-decoration: none;
-}
-
-a .someparticipant {
-	font-weight: bold;
-	color: green;
-	font-size: 10px;
-	text-decoration: none;
-}
-
-
-a:hover .sometag , a:hover .someparticipant {
-	/*text-decoration: underline;*/
-	border-bottom-width: 1px;
-	border-bottom-style: dotted;
+	position: relative;
+	top: -20px;
 }
 
 .somecontent {
 	margin-top: 10px;
 	word-wrap: break-word;
+	display: inline;
 }
 
-.followed:hover {
-	/*border-bottom-width: 1px;
-	border-bottom-style: dotted;
-	border-bottom-color: #993300;
-	border-right-width: 1px;
-	border-right-style: dotted;
-	border-left-width: 1px;
-	border-left-style: dotted;*/
-	text-decoration: underline;
-}
-
-.notfollowed:hover {
-
-}
 
 a {
 	text-decoration: none;
 }
 
-a:hover {
-	/*text-decoration: underline;*/
-	/*border-bottom-width: 1px;
-	border-bottom-style: dotted;*/
+
+.sometag {
+	font-weight: bold;
+	color: red;
+}
+
+.someparticipant {
+	font-weight: bold;
+	color: green;
+	font-size: 10px;
+}
+
+
+.avatar {
+	/*display: inline;*/
+}
+
+.avatarblock {
+	float: left;
+	margin-right: 10px;
+	margin-top: 0;
+	display: block;
+}
+
+
+.somemsg {
+	display: block;
+	word-wrap: break-word;
+}
+
+
+a:hover .sometag {
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+}
+
+/*
+a:hover .followed .someaddress, a:hover .followed .someparticipant {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}*/
+
+a:hover /*.notfollowed */ .someaddress/*, a:hover .notfollowed   .someparticipant*/ {
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
 }
 
 
@@ -99,18 +106,30 @@ a:hover {
 	padding-top: 5px;
 }
 
+.rowmain .tagslist {
+	/*position: relative;
+	top: 20px;*/
+	border-right: 10px;
+}
+
 
 .headmsg {
 	position: relative;
 	float: right;
 	padding-right: 10px;
-	background-color: #ffffaa;
+	background-color: #ffffcc;
 	top: -10px;
+	border-radius: 2px;
+	padding: 2px;
+	width: 85%;
+	text-align: right;
 }
 
 
 .sendbox {
 	/*text-align: center;*/
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 
@@ -129,9 +148,42 @@ a:hover {
 }
 
 
+.invitpeople:hover, #moresemails:hover {
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+}
+
+
+.gra {
+	border: 2px;
+	border-style: solid;
+	border-color: white;
+}
+
+.graselected {
+	border-color: red;
+}
+
+
 .typesm {
 	float: right;
 	font-style: italic;
+}
+
+.blabla {
+	font-weight: bold;
+}
+
+.invitarea {
+	width: 100%;
+}
+
+.invitbut {
+	width: 100%;
+}
+
+.halfbut {
+	width: 48%;
 }
 
 

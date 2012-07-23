@@ -2,23 +2,32 @@
 
 <div id="tabs">
 	<ul>
-		<li><a href="#tabs-1">Last active SeMails</a></li>
-		<li><a href="#tabs-2">My Feeds</a></li>
-		<li><a href="#tabs-3">Discover</a></li>
+		<li><a href="#tabs-1" title='Your last active SeMails'>Last active SeMails</a></li>
+		<li><a href="#tabs-2" title='Last public SeMails of people you are following'>My Feeds</a></li>
+		<li><a href="#tabs-3" title='Meet new people by discovering their SeMails'>Discover</a></li>
 	</ul>
 	<div id="tabs-1">
 		<p id='lastsemails'>
 		<?php
 		
 			echo "<script>mainsemail = Object();</script>";
-		
+
 			$alt = "0";
 			
 			foreach($lastsemails as $lsm)
 			{
 				$id = $lsm->id;
 				$msg = ses_getlastmessage($id);
-				$addr = $lsm->owneraddress;
+				
+				$addr = htmlentities($lsm->owneraddress, 0,"UTF-8");
+				$addrisfollowing = ses_isfollowing($SES_ADDRESS, $addr);
+				
+				if($msg)
+				{
+					$addrlastmsg = htmlentities($msg->address, 0,"UTF-8");
+					$addrlastmsgisfollowing = ses_isfollowing($SES_ADDRESS, $addrlastmsg);
+				}
+				
 				$dateactive = $lsm->dateactive->format('Y-m-d H:i:s');
 				
 				$tags = "";
@@ -26,24 +35,39 @@
 				$expl = explode(";", $lsm->tags);
 				foreach($expl as $t)
 				{
-					$pa = trim($t);
+					$t = htmlentities(trim($t),0,"UTF-8");
 					
 					if($t != "")
 					{
-						$tags .= "<a href='#'><span class='sometag'>#$t</span></a> ";
+						$tags .= "<a href='#' title='Click to browse by tag #$t'><span class='sometag'>#$t</span></a> ";
 					}
 				}
 				
 				
-				$content = "From <a href='#'><span class='".(ses_isfollowing($SES_ADDRESS, $addr) ? "followed" : "notfollowed")."'><span class='someaddress'>".htmlentities($addr, 0,"UTF-8")."</span></span></a>, created the <span class='somedate'>".htmlentities($lsm->datecreated->format('Y-m-d H:i:s'), 0,"UTF-8")."</span>";
+				if($msg)
+				{
+					$mail = "";
+					$tab = json_decode(ses_query_getprofile($addrlastmsg), true);
+
+					if(count($tab) != 0)
+						$mail = $tab["mail"];
+						
+					$hash = md5(strtolower(trim($mail)));
+					$gravatar = "http://www.gravatar.com/avatar/$hash?s=50&d=wavatar";
+
+					$gra = "<a href='#' title='".(ses_isfollowing($SES_ADDRESS, $addrlastmsg) ? "Unfollow" : "Follow")." $addrlastmsg'><img src='$gravatar' alt='$addrlastmsg' class='someparticipant, avatar' name='addr$addrlastmsg' /></a>";
+				}
+		
+				
+				$content = "From <a href='#' title='".($addrisfollowing ? "Unfollow" : "Follow")." $addr'><span class='".($addrisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addr'>$addr</span></span></a>, created the <span class='somedate'>".htmlentities($lsm->datecreated->format('Y-m-d H:i:s'), 0,"UTF-8")."</span>";
 				
 				if($msg)
-					$content .= "<br /><br />Last message from <a href='#'><span class='".(ses_isfollowing($SES_ADDRESS, $msg->address) ? "followed" : "notfollowed")."'><span class='someaddress'>".htmlentities($msg->address, 0,"UTF-8")."</span></span></a> :<br />"
-							 .'<br />&nbsp;&nbsp;&nbsp;&nbsp;<span class="somequote">"'.htmlentities(substr($msg->content,0,20), 0,"UTF-8").(strlen($msg->content) > 20 ? " [...]" : "").'"</span>';
+					$content .= "<br /><br />Last message from <a href='#' title='".($addrlastmsgisfollowing ? "Unfollow" : "Follow")." $addrlastmsg'><span class='".($addrlastmsgisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addrlastmsg'>$addrlastmsg</span></span></a> :<br />"
+							 .'<br />'.$gra.'&nbsp;&nbsp;&nbsp;&nbsp;<span class="somequote">"'.htmlentities(substr($msg->content,0,20), 0,"UTF-8").(strlen($msg->content) > 20 ? " [...]" : "").'"</span>';
 				else
 					$content .= "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;No message yet.<br /><br />";
 					
-				$content .= "<div class='tagslist'>" . $tags . "</div><br />";
+				$content .= "<br /><div class='tagslist'>" . $tags . "</div><br />";
 				
 				echo "<div class='rowmain row$alt' id='row".$id."' name='addr".$addr."'>$content</div>";
 				
@@ -53,7 +77,7 @@
 				echo "<script>mainsemail['$id'] = '$dateactive';</script>";
 			}
 			
-			echo "<br /><br /><br /><a href='#' id='moresemails'>More SeMails</a><br />";
+			echo "<br /><br /><br /><a href='#' title='Show more SeMails' id='moresemails'>More SeMails</a><br />";
 			
 		?>
 
@@ -97,8 +121,12 @@
 			updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails);
 
 		});
+		
+		tiptip();
 	
 	});
 	
 	
 </script>
+
+<br />

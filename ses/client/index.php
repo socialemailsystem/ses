@@ -10,6 +10,10 @@ require_once("ses.php");
 require_once("client_config.php");
 require_once("client_functions.php");
 
+//require_once("lib/nbbc/nbbc.php");
+
+
+
 /**
 *
 * About the architecture :
@@ -79,6 +83,9 @@ require_once("client_functions.php");
 	<div id="dialog-confirm">
 	</div>
 	
+	
+	
+	
 
 <script>
 
@@ -96,6 +103,43 @@ require_once("client_functions.php");
 		// welcome message
 		shownotif("<?php echo $SES_WELCOME; ?>", 3000);
 		
+		
+		
+		
+
+<?php
+
+/*********************************************************/
+
+
+		// *** login ***
+
+
+		if(user_get() == "")
+		{
+
+		?>
+
+				
+		// login window
+		showwin("winlogin", "Login", "controllers/viewLogin.php");
+
+
+
+<?php
+
+
+/*********************************************************/
+
+}
+
+else
+{
+
+?>
+
+
+		
 		// main window
 		showwin("winmain", "SeMails and Feeds", "controllers/viewMain.php?nbrsemails=5");
 		
@@ -111,17 +155,82 @@ require_once("client_functions.php");
 		
 		
 		
+		// follow someone
+		$(".someaddress, .someparticipant, .avatar, .avatarblock").live("click", function (e) {
 		
-		$(".someaddress, .someparticipant").live("click", function (e) {
-		
-			askfollow("<?php echo $SES_ADDRESS; ?>", $(this).html());
+			askfollow("<?php echo $SES_ADDRESS; ?>", $(this).attr("name").substring(4));
 			
 		});
 		
 		
+		// invit people to a SeMail
+		$(".invitpeople").live("click", function (e) {
+		
+			invitpeople($(this).attr("name").substring(3));
+			
+		});
+		
+		
+		// follow someone
+		$('#btnaddcontact').click(function() {
+			
+			showwin("wininputfollow", "Follow someone", "controllers/viewInputfollow.php", function() {
+				$( "#wininputfollow" ).dialog("option", "resizable", false);
+				$( "#wininputfollow" ).dialog("option", "width", 400);
+				$( "#wininputfollow" ).dialog("option", "height", 200);
+			});
+			
+		});
+		
+		
+		
+		// create Public
+		$('#btnnewpublic').click(function() {
+			
+			showwin("wincreate", "Create Public SeMail", "controllers/viewCreate.php?type=0", function() {
+				$( "#wincreate" ).dialog("option", "resizable", false);
+				$( "#wincreate" ).dialog("option", "width", 400);
+				$( "#wincreate" ).dialog("option", "height", 250);
+			});
+			
+		});
+		
+		// create On Invit
+		$('#btnnewoninvit').click(function() {
+			
+			showwin("wincreate", "Create On Invit SeMail", "controllers/viewCreate.php?type=1", function() {
+				$( "#wincreate" ).dialog("option", "resizable", false);
+				$( "#wincreate" ).dialog("option", "width", 400);
+				$( "#wincreate" ).dialog("option", "height", 250);
+			});
+			
+		});
+
+		// create Private
+		$('#btnnewprivate').click(function() {
+			
+			showwin("wincreate", "Create Private SeMail", "controllers/viewCreate.php?type=2", function() {
+				$( "#wincreate" ).dialog("option", "resizable", false);
+				$( "#wincreate" ).dialog("option", "width", 400);
+				$( "#wincreate" ).dialog("option", "height", 250);
+			});
+			
+		});	
+
+
+<?php
+
+}
+
+?>
+
+		
 	});
 
 </script>
+
+
+
 
 </body>
 
