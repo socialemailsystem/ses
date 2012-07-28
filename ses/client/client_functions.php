@@ -7,6 +7,7 @@ function jsdbg($msg)
 }
 
 
+
 function user_get()
 {
 	return $_SESSION["ses_user"];
@@ -25,5 +26,15 @@ function user_logout()
 	$_SESSION["ses_user"] = "";
 	$SES_ADDRESS = "";
 }
+
+
+
+
+
+if(!isset($_SESSION["ses_user"]))
+		$_SESSION["ses_user"] = "";
+else
+	user_login($_SESSION["ses_user"]);
+
 
 ?>

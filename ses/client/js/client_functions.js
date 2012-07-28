@@ -185,7 +185,7 @@ function bigping(freqping)
 				// listed SeMail received a new message
 				if(mainsemail[json[i]] != null)
 				{
-					updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails);
+					refreshmain();
 					
 					newmsg = true;
 				}
@@ -259,7 +259,9 @@ function askfollow(user, contact)
 		
 		modalwin(title, content, function() {
 
-			callcontroller("controllers/action"+fl+".php?user="+user+"&contact="+contact);
+			callcontroller("controllers/action"+fl+".php?user="+user+"&contact="+contact, function() {
+				refreshmain();
+			});
 		
 		});
 		
@@ -289,3 +291,27 @@ function invitpeople(id)
 	showwin("invitwin", "Invit people to a SeMail", "controllers/viewSelectpeople.php?id=" + id, function(msg) {
 	});
 }
+
+
+function deletesemail(id)
+{
+	callcontroller("controllers/actionDelete.php?id=" + id, function() {
+		refreshmain();
+		$('#winsemail'+id.substring(0,20)).dialog("destroy");
+	});
+}
+
+
+function refreshmain()
+{
+
+	var $tabs = $('#tabs').tabs();
+	var selected = $tabs.tabs('option', 'selected');
+			
+	updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails+"&nbrfeeds="+nbrfeeds, function()
+	{
+		$tabs = $('#tabs').tabs();
+		$tabs.tabs('select', selected);
+	});
+}
+

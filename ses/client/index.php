@@ -14,6 +14,14 @@ require_once("client_functions.php");
 
 
 
+if(isset($_SESSION["ses_message"]) && $_SESSION["ses_message"] != "")
+{
+	$SES_WELCOME = $_SESSION["ses_message"];
+	$_SESSION["ses_message"] = "";
+}
+
+
+
 /**
 *
 * About the architecture :
@@ -59,12 +67,16 @@ require_once("client_functions.php");
 
     <div class="notification ondemand hide">
         <p>
+		
+		<button id="btnlogout">Logout</button>
+		
 		<button id="btnnewpublic">Public SeMail</button>
 		<button id="btnnewoninvit">On Invit SeMail</button>
 		<button id="btnnewprivate">Private SeMail</button>
 		
 		<button id="btnaddcontact">Follow someone</button>
 		<button id="btnsettings">Settings</button>
+
         </p>
         <a class="close" href="javascript:"><img src="images/icon-close.png" /></a>
     </div>
@@ -90,18 +102,17 @@ require_once("client_functions.php");
 <script>
 
 	$(document).ready(function(){
-	
+		
+		
 		// init
 		
-		$('.notification.ondemand').notify(({ type: 'ondemand' }));
-		
-
 		$("button").button();
 
 		
 		
 		// welcome message
-		shownotif("<?php echo $SES_WELCOME; ?>", 3000);
+		
+		shownotif("<?php echo $SES_WELCOME; ?>", 5000);
 		
 		
 		
@@ -120,9 +131,27 @@ require_once("client_functions.php");
 
 		?>
 
-				
+		var midx = $(window).scrollLeft() + Math.floor($(window).width() / 2);
+		var midy = $(window).scrollTop() + Math.floor($(window).height() / 2);
+		
+		
+		$(".ondemand, .ondemand-button").remove();
+
+		
 		// login window
 		showwin("winlogin", "Login", "controllers/viewLogin.php");
+		
+		$( "#winlogin" ).dialog("option", "resizable", false);
+		$( "#winlogin" ).dialog("option", "width", 550);
+		$( "#winlogin" ).dialog("option", "height", 205);
+		$( "#winlogin" ).dialog("option", "position", [midx - 275, midy - 275]);
+		
+		// register window
+		showwin("winregister", "Register", "controllers/viewRegister.php");
+		$( "#winregister" ).dialog("option", "resizable", false);
+		$( "#winregister" ).dialog("option", "width", 550);
+		$( "#winregister" ).dialog("option", "height", 245);
+		$( "#winregister" ).dialog("option", "position", [midx - 275, midy - 40]);
 
 
 
@@ -137,14 +166,15 @@ else
 {
 
 ?>
-
-
+		
+		$('.notification.ondemand').notify(({ type: 'ondemand' }));
+		
 		
 		// main window
-		showwin("winmain", "SeMails and Feeds", "controllers/viewMain.php?nbrsemails=5");
+		showwin("winmain", "SeMails and Feeds", "controllers/viewMain.php?nbrsemails=5&nbrfeeds=5");
 		
 		
-		// ping each X seconds for update
+		// ping each X seconds for updateupdate
 		
 		allsemail = new Object(); // array of all open SeMails
 		mainsemail = new Object(); // array of all listed SeMails in the main window
@@ -167,6 +197,19 @@ else
 		$(".invitpeople").live("click", function (e) {
 		
 			invitpeople($(this).attr("name").substring(3));
+			
+		});
+		
+		
+		// delete a Public SeMail
+		$(".deletesemail").live("click", function (e) {
+
+			var id = $(this).attr("name").substring(3);
+			
+			modalwin("Delete Public SeMail", "<br />Do you want to delete the SeMail ?", function() {
+				deletesemail(id);
+			});
+			
 			
 		});
 		
@@ -213,6 +256,28 @@ else
 				$( "#wincreate" ).dialog("option", "resizable", false);
 				$( "#wincreate" ).dialog("option", "width", 400);
 				$( "#wincreate" ).dialog("option", "height", 250);
+			});
+			
+		});	
+		
+		
+		// logout
+		$('#btnlogout').click(function() {
+			
+			callcontroller("controllers/actionLogout.php", function() {
+				window.location = ".";
+			});
+			
+		});	
+		
+		
+		// settings
+		$('#btnsettings').click(function() {
+			
+			showwin("winsettings", "Settings for <?php echo user_get(); ?>", "controllers/viewSettings.php", function() {
+				$( "#winsettings" ).dialog("option", "resizable", false);
+				$( "#winsettings" ).dialog("option", "width", 490);
+				$( "#winsettings" ).dialog("option", "height", 215);
 			});
 			
 		});	

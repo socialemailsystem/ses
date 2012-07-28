@@ -148,7 +148,7 @@ a:hover /*.notfollowed */ .someaddress/*, a:hover .notfollowed   .someparticipan
 }
 
 
-.invitpeople:hover, #moresemails:hover {
+.invitpeople:hover, #moresemails:hover, #morefeeds:hover, #refreshfeeds:hover, .deletesemail:hover {
 	border-bottom-width: 1px;
 	border-bottom-style: dotted;
 }
@@ -184,6 +184,29 @@ a:hover /*.notfollowed */ .someaddress/*, a:hover .notfollowed   .someparticipan
 
 .halfbut {
 	width: 48%;
+}
+
+
+label {
+	/*min-width: 100px;*/
+	float: left;
+	width: 100px;
+	font-weight: bold;
+}
+
+.afterfield {
+	font-weight: bold;
+	color: #70b0d0;
+	margin-left: 10px;
+}
+
+.formbut {
+	width: 100px;
+	margin-top: 20px;
+}
+
+.error {
+	font-size: 9px;
 }
 
 

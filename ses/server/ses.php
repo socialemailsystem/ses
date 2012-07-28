@@ -214,6 +214,10 @@ function ses_getlastsemails($address, $from, $limit)
 	$from = intval($from);
 	$limit = intval($limit);
 	
+	// first block : SeMails whose the address is a participant
+	// second block : Public SeMails whose the address is the owner
+	// third block : Public SeMails whose the address is NOT the owner, but there is some messages sent by it (only on local server)
+	
 	$listsemail = Semail::find_by_sql(
 	"select s.* from ses_semail s, ses_participant p
 	where (p.semail_id = s.id AND p.address = $address)
@@ -221,7 +225,12 @@ function ses_getlastsemails($address, $from, $limit)
 	UNION
 	
 	select * from ses_semail
-	where type = '0'
+	where type = '0' and owneraddress = $address
+	
+	UNION
+	
+	select distinct s.* from ses_semail s, ses_message m
+	where s.type = '0' and s.owneraddress != $address and s.id = m.semail_id and m.address = $address
 	
 	order by dateactive desc, datecreated desc
 	limit $from, $limit"
@@ -371,6 +380,35 @@ function ses_checkserver($server)
 	//return checkdnsrr($server);
 }
 
+
+
+// return the feeds for an user
+function ses_getfeeds($addr, $from = "0", $to = "0")
+{
+	$ret = array();
+	
+	$user = User::find(array('conditions' => array("address = ?", $addr)));
+	
+	if($user != null)
+	{
+		$id = $user->id;
+		
+		$listcontacts = Contact::all(array('conditions' => array("user_id = ?", $id)));
+
+		foreach($listcontacts as $l)
+		{
+			$js = ses_query_getfeed($l->address, $from, $to);
+			$tab = json_decode($js, true);
+
+			foreach($tab as $sem)
+			{
+				$ret[] = $sem;
+			}
+		}
+	}
+	
+	return $ret;
+}
 
 
 
@@ -538,7 +576,7 @@ function ses_delete($sender, $id)
 function ses_getfeed($address, $from, $limit)
 {
 	$tab = array();
-	$listsemail = Semail::all(array('conditions' => array("owneraddress = ? AND type = '0'", $address), 'order' => 'datecreated desc','offset' => $from, 'limit' => $limit));
+	$listsemail = Semail::all(array('conditions' => array("owneraddress = ? AND type = '0'", $address), 'order' => 'dateactive desc','offset' => $from, 'limit' => $limit));
 	
 	foreach($listsemail as $lsm)
 	{
@@ -547,11 +585,12 @@ function ses_getfeed($address, $from, $limit)
 		
 		foreach($listmsg as $lmsg)
 		{
-			$tabmsg[] = array("id" => $lmsg->id, "content" => $lmsg->content, "address" => $lmsg->address, "datesent" => $lmsg->datesent->format('Y-m-d H:i:s'));
+			$tabmsg[] = array("id" => $lmsg->id, "content" => $lmsg->content, "address" => $lmsg->address, "datesent" => $lmsg->datesent->format('Y-m-d H:i:s'), "semail_id" => $lmsg->semail_id);
 		}
 		
 
-		$tab[] = array("id" => $lsm->id, "readonly" => $lsm->readonly, "tags" => $lsm->tags, "datecreated" => $lsm->datecreated->format('Y-m-d H:i:s'), "messages" => $tabmsg);
+		$tab[] = array("id" => $lsm->id, "type" => $lsm->type, "readonly" => $lsm->readonly, "owneraddress" => $lsm->owneraddress, "list" => $lsm->list, "tags" => $lsm->tags,
+						"datecreated" => $lsm->datecreated->format('Y-m-d H:i:s'), "dateactive" => $lsm->dateactive->format('Y-m-d H:i:s'), "msg" => $tabmsg);
 	}
 	
 	return json_encode($tab);

@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 
 <?php
 
@@ -39,7 +42,8 @@ else
 	$type = "Private";
 		
 
-$readonly = !($semail->readonly == "0" || ses_isowner($SES_ADDRESS, $id));
+$isowner = ses_isowner($SES_ADDRESS, $id);
+$readonly = !($semail->readonly == "0" || $isowner);
 
 
 $listaddress = ses_listaddresses($id);

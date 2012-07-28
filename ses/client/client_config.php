@@ -10,7 +10,7 @@
 
 
 
-$SES_TITLE = "Social eMail System - Beyond eMail and social network";
+$SES_TITLE = "Social eMail System - Beyond social network and mail";
 
 $SES_WELCOME = "Welcome to your Social eMail System server !";
 
@@ -34,8 +34,8 @@ $SES_JS = array (
 	"promise.js",
 	"jquery.noty.js",
 	"notification.js",
-	"jquery.caret.1.02.js",
-	"jquery.qtip.min.js"
+	"jquery.qtip.min.js",
+	"additional-methods.js"
 );
 
 

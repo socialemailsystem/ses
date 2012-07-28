@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <?php
 
 set_include_path("../../server/" . PATH_SEPARATOR . get_include_path());
@@ -13,16 +14,21 @@ ses_init();
 
 
 
-if(!isset($_GET["user"]) || !isset($_GET["contact"]))
+if(!isset($_GET["id"]))
 {
 	die();
 }
 
 
-$useraddress = $_GET["user"];
-$contactaddress = $_GET["contact"];
+$id = $_GET["id"];
 
 
-ses_follow($useraddress, $contactaddress);
+$sender = $SES_ADDRESS;
+
+$o = Semail::find($id);
+
+if($o != null && $sender != "" /*&& $sender == $o->owneraddress*/)
+	ses_delete($sender, $id);
+
 
 ?>

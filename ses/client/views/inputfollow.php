@@ -30,6 +30,7 @@
 			user = '<?php echo $user; ?>';
 			callcontroller("controllers/actionFollow.php?user="+user+"&contact="+$('#inputfollowarea').val(), function() {
 				$('#wininputfollow').dialog("close");
+				refreshmain();
 			});
 			
 		});

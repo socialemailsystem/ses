@@ -20,8 +20,10 @@ if($semail)
 		}
 	}
 	
-	if($type == "On Invit")
-		$type = "<a href='#' class='invitpeople' name='inv$id'>$type</a>";
+	if($type == "On Invit" || ($type == "Private" && $isowner))
+		$type = "<a href='#' class='invitpeople' title='Invit people' name='inv$id'>$type</a>";
+	else if($type == "Public" && $isowner)
+		$type = "<a href='#' class='deletesemail' title='Delete SeMail' name='del$id'>$type</a>";
 	
 	echo "<span class='typesm'>$type".($readonly?" (Read Only)":"")."</span><span class='someaddress'>Tags : </span>$tags<br /><br />";
 
@@ -133,7 +135,7 @@ if($semail)
 		$('#but<?php echo $shortid; ?>').click(function() {
 
 			callcontroller("controllers/actionSend.php?id=<?php echo $id ?>&msg="+encodeURIComponent($("#msg<?php echo $shortid; ?>").val()), function() {
-				updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails);
+				refreshmain();
 				updatewin("winsemail<?php echo $shortid ?>", "controllers/viewSemail.php?id=<?php echo $id ?>");
 			});
 			

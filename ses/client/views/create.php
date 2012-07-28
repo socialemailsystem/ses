@@ -42,7 +42,7 @@
 					invitpeople(msg);
 				}
 				
-				updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails);
+				refreshmain();
 			});
 
 			

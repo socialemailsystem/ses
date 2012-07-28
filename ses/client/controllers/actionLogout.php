@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <?php
 
 set_include_path("../../server/" . PATH_SEPARATOR . get_include_path());
@@ -13,16 +14,11 @@ ses_init();
 
 
 
-if(!isset($_GET["user"]) || !isset($_GET["contact"]))
-{
-	die();
-}
+user_logout();
 
 
-$useraddress = $_GET["user"];
-$contactaddress = $_GET["contact"];
 
+header('Location: ../index.php'); 
 
-ses_follow($useraddress, $contactaddress);
 
 ?>
