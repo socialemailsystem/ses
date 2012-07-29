@@ -93,78 +93,94 @@
 		<p>
 			
 		<?php
-
-			echo " <a href='#' title='Refresh Feeds' id='refreshfeeds'>Refresh Feeds</a><br />";
-
-			$alt = "0";
-
-			foreach($feedsemails as $lsm)
-			{
-				$id = $lsm['id'];
-				//$msg = ses_getlastmessage($id);
-				$msg = $lsm['msg'];
-				if($msg)
-					$msg = $msg[count($msg) - 1];
-				
-				$addr = htmlentities($lsm['owneraddress'], 0,"UTF-8");
-				$addrisfollowing = ses_isfollowing($SES_ADDRESS, $addr);
-				
-				if($msg)
-				{
-					$addrlastmsg = htmlentities($msg['address'], 0,"UTF-8");
-					$addrlastmsgisfollowing = ses_isfollowing($SES_ADDRESS, $addrlastmsg);
-				}
-				
-				$dateactive = $lsm['dateactive'];
-				
-				$tags = "";
-				
-				$expl = explode(";", $lsm['tags']);
-				foreach($expl as $t)
-				{
-					$t = htmlentities(trim($t),0,"UTF-8");
-					
-					if($t != "")
-					{
-						$tags .= "<a href='#' title='Click to browse by tag #$t'><span class='sometag'>#$t</span></a> ";
-					}
-				}
-				
-				
-				if($msg)
-				{
-					$mail = "";
-					$tab = json_decode(ses_query_getprofile($addrlastmsg), true);
-
-					if(count($tab) != 0)
-						$mail = $tab["mail"];
-						
-					$hash = md5(strtolower(trim($mail)));
-					$gravatar = "http://www.gravatar.com/avatar/$hash?s=50&d=wavatar";
-
-					$gra = "<a href='#' title='".(ses_isfollowing($SES_ADDRESS, $addrlastmsg) ? "Unfollow" : "Follow")." $addrlastmsg'><img src='$gravatar' alt='$addrlastmsg' class='someparticipant, avatar' name='addr$addrlastmsg' /></a>";
-				}
 		
+			// cache system (because getting feeds is ressource-consuming and contacts many servers)
+			
+			$cache = cache_get();
+			if($cache == "" || $forcecache)
+			{
+				$cache = "";
 				
-				$content = "From <a href='#' title='".($addrisfollowing ? "Unfollow" : "Follow")." $addr'><span class='".($addrisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addr'>$addr</span></span></a>, created the <span class='somedate'>".htmlentities($lsm['datecreated'], 0,"UTF-8")."</span>";
-				
-				if($msg)
-					$content .= "<br /><br />Last message from <a href='#' title='".($addrlastmsgisfollowing ? "Unfollow" : "Follow")." $addrlastmsg'><span class='".($addrlastmsgisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addrlastmsg'>$addrlastmsg</span></span></a> :<br />"
-							 .'<br />'.$gra.'&nbsp;&nbsp;&nbsp;&nbsp;<span class="somequote">"'.htmlentities(substr($msg['content'],0,20), 0,"UTF-8").(strlen($msg['content']) > 20 ? " [...]" : "").'"</span>';
-				else
-					$content .= "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;No message yet.<br /><br />";
+				$cache .=  " <a href='#' title='Refresh Feeds' id='refreshfeeds'>Refresh Feeds</a><br />";
+
+				$alt = "0";
+
+				foreach($feedsemails as $lsm)
+				{
+					$id = $lsm['id'];
+					//$msg = ses_getlastmessage($id);
+					$msg = $lsm['msg'];
+					if($msg)
+						$msg = $msg[count($msg) - 1];
 					
-				$content .= "<br /><div class='tagslist'>" . $tags . "</div><br />";
+					$addr = htmlentities($lsm['owneraddress'], 0,"UTF-8");
+					$addrisfollowing = ses_isfollowing($SES_ADDRESS, $addr);
+					
+					if($msg)
+					{
+						$addrlastmsg = htmlentities($msg['address'], 0,"UTF-8");
+						$addrlastmsgisfollowing = ses_isfollowing($SES_ADDRESS, $addrlastmsg);
+					}
+					
+					$dateactive = $lsm['dateactive'];
+					
+					$tags = "";
+					
+					$expl = explode(";", $lsm['tags']);
+					foreach($expl as $t)
+					{
+						$t = htmlentities(trim($t),0,"UTF-8");
+						
+						if($t != "")
+						{
+							$tags .= "<a href='#' title='Click to browse by tag #$t'><span class='sometag'>#$t</span></a> ";
+						}
+					}
+					
+					
+					if($msg)
+					{
+						$mail = "";
+						$tab = json_decode(ses_query_getprofile($addrlastmsg), true);
+
+						if(count($tab) != 0)
+							$mail = $tab["mail"];
+							
+						$hash = md5(strtolower(trim($mail)));
+						$gravatar = "http://www.gravatar.com/avatar/$hash?s=50&d=wavatar";
+
+						$gra = "<a href='#' title='".(ses_isfollowing($SES_ADDRESS, $addrlastmsg) ? "Unfollow" : "Follow")." $addrlastmsg'><img src='$gravatar' alt='$addrlastmsg' class='someparticipant, avatar' name='addr$addrlastmsg' /></a>";
+					}
+			
+					
+					$content = "From <a href='#' title='".($addrisfollowing ? "Unfollow" : "Follow")." $addr'><span class='".($addrisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addr'>$addr</span></span></a>, created the <span class='somedate'>".htmlentities($lsm['datecreated'], 0,"UTF-8")."</span>";
+					
+					if($msg)
+						$content .= "<br /><br />Last message from <a href='#' title='".($addrlastmsgisfollowing ? "Unfollow" : "Follow")." $addrlastmsg'><span class='".($addrlastmsgisfollowing ? "followed" : "notfollowed")."'><span class='someaddress' name='addr$addrlastmsg'>$addrlastmsg</span></span></a> :<br />"
+								 .'<br />'.$gra.'&nbsp;&nbsp;&nbsp;&nbsp;<span class="somequote">"'.htmlentities(substr($msg['content'],0,20), 0,"UTF-8").(strlen($msg['content']) > 20 ? " [...]" : "").'"</span>';
+					else
+						$content .= "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;No message yet.<br /><br />";
+						
+					$content .= "<br /><div class='tagslist'>" . $tags . "</div><br />";
+					
+					$cache .=  "<div class='rowfeeds row$alt' id='row".$id."' name='serv".ses_getserver($addr)."'>$content</div>";
+					
+					$alt = ($alt == "0" ? "1" : "0");
+					
+					
+					//$cache .=  "<script>mainsemail['$id'] = '$dateactive';</script>";
+				}
 				
-				echo "<div class='rowmain row$alt' id='row".$id."' name='addr".$addr."'>$content</div>";
-				
-				$alt = ($alt == "0" ? "1" : "0");
+				$cache .=  "<br /><br /><br /><a href='#' title='Show more Feeds' id='morefeeds'>More Feeds</a><br />";
 				
 				
-				echo "<script>mainsemail['$id'] = '$dateactive';</script>";
+				//echo "CACHING<br />";
+				
+				cache_set($cache);
+			
 			}
 			
-			echo "<br /><br /><br /><a href='#' title='Show more Feeds' id='morefeeds'>More Feeds</a><br />";
+			echo $cache;
 		
 		?>
 		
@@ -203,6 +219,18 @@
 		
 		});
 		
+		$(".rowfeeds").click(function(e) {
+
+			var id = $(this).attr('id').substring(3);
+			var s = $(this).attr('name').substring(4);
+			
+			//alert(s);
+			//alert(id);
+			
+			showwin("winsemail"+id.substring(0,20), "Public SeMail", "controllers/viewSemail.php?id="+id+"&server="+s);
+		
+		});
+		
 		
 		$("#moresemails").click(function() {
 
@@ -215,14 +243,14 @@
 		$("#morefeeds").click(function() {
 
 			nbrfeeds += 5;
-			refreshmain();
+			refreshmain(true);
 
 		});
 		
 		
 		$("#refreshfeeds").click(function() {
 
-			refreshmain();
+			refreshmain(true);
 
 		});
 		

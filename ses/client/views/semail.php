@@ -20,14 +20,32 @@ if($semail)
 		}
 	}
 	
-	if($type == "On Invit" || ($type == "Private" && $isowner))
-		$type = "<a href='#' class='invitpeople' title='Invit people' name='inv$id'>$type</a>";
-	else if($type == "Public" && $isowner)
-		$type = "<a href='#' class='deletesemail' title='Delete SeMail' name='del$id'>$type</a>";
 	
-	echo "<span class='typesm'>$type".($readonly?" (Read Only)":"")."</span><span class='someaddress'>Tags : </span>$tags<br /><br />";
+	$share = "";
+	
+	// public id to share
+	if($type == "Public")
+	{
+		$share = "<a href='#' class='copyid' title='Copy public id to clipboard and share it !' name='cop$id'><span class='publicid'>Share it</span></a>";
+	}
+	
+	
+	// on invit : invit link
+	if($type == "On Invit" || ($type == "Private" && $isowner))
+	{
+		$type = "<a href='#' class='invitpeople' title='Invit people' name='inv$id'>$type</a>";
+	}
+	
+	// public and owner : delete link
+	else if($type == "Public" && $isowner)
+	{
+		$type = "<a href='#' class='deletesemail' title='Delete SeMail' name='del$id'>$type</a>";
+	}
+	
+	
+	echo "<span class='typesm'>$type".($readonly?" (Read Only)":"")."</span><span class='someaddress'>Tags : </span>$tags<br /><br />$share";
 
-
+	
 	
 	// participants
 	
@@ -134,9 +152,11 @@ if($semail)
 		
 		$('#but<?php echo $shortid; ?>').click(function() {
 
-			callcontroller("controllers/actionSend.php?id=<?php echo $id ?>&msg="+encodeURIComponent($("#msg<?php echo $shortid; ?>").val()), function() {
+			var server = '<?php echo $server; ?>';
+			
+			callcontroller("controllers/actionSend.php?id=<?php echo $id ?>&msg="+encodeURIComponent($("#msg<?php echo $shortid; ?>").val())+"&server="+server, function() {
 				refreshmain();
-				updatewin("winsemail<?php echo $shortid ?>", "controllers/viewSemail.php?id=<?php echo $id ?>");
+				updatewin("winsemail<?php echo $shortid ?>", "controllers/viewSemail.php?id=<?php echo $id ?>&server="+server);
 			});
 			
 			$("#msg<?php echo $shortid; ?>").val("");

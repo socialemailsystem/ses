@@ -5,7 +5,7 @@
 
 
 
-$actions = array("create", "invit", "getfeed", "getprofile", "message", "validate");
+$actions = array("create", "invit", "getfeed", "getprofile", "getpublic", "message", "validate");
 
 if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
    && isset($_GET["key"]) && isset($_GET["sender"]) && isset($_GET["id"]))
@@ -51,7 +51,7 @@ if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
 	// get the last public SeMails of someone
 	else if($action == "getfeed" && isset($_GET["address"])&& isset($_GET["from"])&& isset($_GET["limit"]))
 	{
-	    $address = $_GET["address"]; // address
+	    $address = $_GET["address"]; // address (or list of addresses)
 		$from = $_GET["from"]; // from
 		$limit = $_GET["limit"]; // limit
 		
@@ -64,6 +64,12 @@ if(isset($_GET["action"]) && in_array($_GET["action"], $actions)
 	    $address = $_GET["address"]; // user address
 
 		echo ses_getprofile($address);
+	}
+	
+	// get a Public SeMail
+	else if($action == "getpublic")
+	{
+		echo ses_getpublic($id);
 	}
 	
 	// send a message

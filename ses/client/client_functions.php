@@ -29,6 +29,49 @@ function user_logout()
 
 
 
+function cache_set($v)
+{
+	if(user_get() != "")
+	{
+		$cache_file = $_SESSION["ses_cache"];
+		file_put_contents($cache_file, $v);
+	}
+}
+
+function cache_get()
+{
+	if(user_get() != "")
+	{
+		$cache_file = $_SESSION["ses_cache"];
+		return file_get_contents($cache_file);
+	}
+	
+	else
+		return "";
+}
+
+
+
+function cache_create()
+{
+	if(user_get() != "")
+	{
+		$cache_file = dirname(__FILE__)."/tmp/cache_".md5(user_get());
+		$_SESSION["ses_cache"] = $cache_file;
+		
+		if(!file_exists($cache_file))
+		{
+			file_put_contents($cache_file, "");
+			//touch($cache_file);
+		}
+	}
+	
+	else
+	{
+		$_SESSION["ses_cache"] = "";
+	}
+}
+
 
 
 if(!isset($_SESSION["ses_user"]))

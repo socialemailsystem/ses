@@ -302,13 +302,18 @@ function deletesemail(id)
 }
 
 
-function refreshmain()
+function refreshmain(forcecache)
 {
 
 	var $tabs = $('#tabs').tabs();
 	var selected = $tabs.tabs('option', 'selected');
+	
+	var fc = "";
+	
+	if(forcecache)
+		fc = "&forcecache=1";
 			
-	updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails+"&nbrfeeds="+nbrfeeds, function()
+	updatewin("winmain", "controllers/viewMain.php?nbrsemails="+nbrsemails+"&nbrfeeds="+nbrfeeds+fc, function()
 	{
 		$tabs = $('#tabs').tabs();
 		$tabs.tabs('select', selected);

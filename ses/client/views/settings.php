@@ -15,8 +15,12 @@
 
 		<br /><br />	
 
-		<!-- settings  -->
-		<button type=button id='settingsbut' class='formbut'>Update</button>
+		<br />
+		
+		<!-- update  -->
+		<button type=button id='settingsbut' class='formbut, halfbut'>Update</button>
+		
+		<button type=button id='settingscancelbut' class='formbut, halfbut'>Cancel</button>
 
 	</form>
 	
@@ -96,6 +100,17 @@
 		$('#settingsbut').click(function() {
 			$('#settingsform').submit();
 		});
+		
+		
+		
+		// cancel button
+		
+		$('#settingscancelbut').click(function() {
+
+			$('#winsettings').dialog("close");
+			
+		});
+		
 		
 		
 		tiptip();

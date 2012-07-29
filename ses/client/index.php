@@ -22,6 +22,10 @@ if(isset($_SESSION["ses_message"]) && $_SESSION["ses_message"] != "")
 
 
 
+cache_create();
+
+
+
 /**
 *
 * About the architecture :
@@ -73,6 +77,8 @@ if(isset($_SESSION["ses_message"]) && $_SESSION["ses_message"] != "")
 		<button id="btnnewpublic">Public SeMail</button>
 		<button id="btnnewoninvit">On Invit SeMail</button>
 		<button id="btnnewprivate">Private SeMail</button>
+		
+		<button id="btnopenid">Open with id</button>
 		
 		<button id="btnaddcontact">Follow someone</button>
 		<button id="btnsettings">Settings</button>
@@ -171,7 +177,7 @@ else
 		
 		
 		// main window
-		showwin("winmain", "SeMails and Feeds", "controllers/viewMain.php?nbrsemails=5&nbrfeeds=5");
+		showwin("winmain", "SeMails and Feeds", "controllers/viewMain.php?nbrsemails=5&nbrfeeds=5&forcecache=1");
 		
 		
 		// ping each X seconds for updateupdate
@@ -209,7 +215,34 @@ else
 			modalwin("Delete Public SeMail", "<br />Do you want to delete the SeMail ?", function() {
 				deletesemail(id);
 			});
+	
+		});
+		
+		
+		// display a Public id
+		$(".copyid").live("click", function (e) {
+
+			var id = "<?php echo $SES_SERVER; ?>;" + $(this).attr("name").substring(3);
+
+			showwin("winshare", "Share Public SeMail", "controllers/viewShare.php?id="+id, function() {
+				$( "#winshare" ).dialog("option", "resizable", false);
+				$( "#winshare" ).dialog("option", "width", 600);
+				$( "#winshare" ).dialog("option", "height", 175);
+			});
 			
+			
+		});
+		
+		
+		
+		// open with id
+		$('#btnopenid').click(function() {
+			
+			showwin("wininputid", "Open Public SeMail", "controllers/viewInputid.php", function() {
+				$( "#wininputid" ).dialog("option", "resizable", false);
+				$( "#wininputid" ).dialog("option", "width", 300);
+				$( "#wininputid" ).dialog("option", "height", 200);
+			});
 			
 		});
 		

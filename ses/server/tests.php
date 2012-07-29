@@ -71,7 +71,7 @@ $address = "tests::$SES_SERVER";
 $from = "0";
 $limit = "10";
 echo "<br /> Feed : <br />";
-echo ses_query_getfeed($address, $from, $limit);
+echo ses_query_getfeed($SES_SERVER, $address, $from, $limit);
 echo '<br />"<br /><br />';
 
 

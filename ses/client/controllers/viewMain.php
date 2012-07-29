@@ -20,11 +20,12 @@ if(!isset($_GET["nbrsemails"]) || !isset($_GET["nbrfeeds"]))
 
 $nbrsemails = intval($_GET["nbrsemails"]);
 $nbrfeeds = intval($_GET["nbrfeeds"]);
+$forcecache = isset($_GET["forcecache"]);
 
 
 
 $lastsemails = ses_getlastsemails("$SES_ADDRESS", 0, $nbrsemails);
-$feedsemails = ses_getfeeds($SES_ADDRESS, 0, $nbrfeeds);
+$feedsemails = ses_getuserfeeds($SES_ADDRESS, 0, $nbrfeeds);
 
 
 

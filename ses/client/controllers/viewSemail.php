@@ -26,8 +26,50 @@ $id = $_GET["id"];
 
 $shortid = substr($id,0,20);
 
-$semail = Semail::find($id);
-$messages = Message::all(array('conditions' => array("semail_id = ?", $id), 'order' => 'datesent'));
+// local SeMail (On Invit and Private)
+if(!isset($_GET["server"]) || $_GET["server"] == "")
+{
+	$server = "";
+	$semail = Semail::find($id);
+	$messages = Message::all(array('conditions' => array("semail_id = ?", $id), 'order' => 'datesent'));
+}
+
+// Public distant SeMail
+else
+{
+	$server = $_GET["server"];
+	
+	// get the SeMail in json format
+	$r = ses_query_getpublic($server, $id);
+	$r = json_decode($r, true);
+	
+	// json -> SeMail object
+	$semail = new Semail();
+	$semail->id = $r["id"];
+	$semail->type = $r["type"];
+	$semail->readonly = $r["readonly"];
+	$semail->owneraddress = $r["owneraddress"];
+	$semail->list = $r["list"];
+	$semail->tags = $r["tags"];
+	$semail->datecreated = $r["datecreated"];
+	$semail->dateactive = $r["dateactive"];
+	
+	$msg = $r["msg"];
+	$messages = array();
+	
+	// json -> array of Message objects
+	foreach($msg as $m)
+	{
+		$nm = new Message();
+		$nm->id = $m["id"];
+		$nm->content = $m["content"];
+		$nm->address = $m["address"];
+		$nm->datesent = $m["datesent"];
+		$nm->semail_id = $m["semail_id"];
+		
+		$messages[] = $nm;
+	}
+}
 
 
 // type
