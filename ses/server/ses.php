@@ -274,16 +274,64 @@ function ses_bigping($idlist, $lastlist)
 	{
 		$id = $idlist[$i];
 		$last = $lastlist[$i];
-		
-		$list = Semail::all(array('conditions' => array("id = ? and dateactive > ?", $id, $last)));
-		
-		foreach($list as $sm)
+
+		// remote
+		if(substr($last,0,7) == "REMOTE_")
 		{
-			$ret[] = $sm->id;
+			$end = substr($last, 7);
+
+			$expl = explode(",", $end);
+			if(count($expl) == 2)
+			{
+				$server = $expl[0];
+				$last = $expl[1];
+				
+				// get the SeMail in json format
+				$r = trim(ses_query_getpublic($server, $id));
+				
+				if($r != "" && $r != "[]")
+				{
+					$r = json_decode($r, true);
+					
+					$dateactive = $r["dateactive"];
+					
+					if($dateactive > $last)
+						$ret[] = $id;
+				}
+			}
+		}
+		
+		// local
+		else
+		{
+			$sm = Semail::find(array('conditions' => array("id = ? and dateactive > ?", $id, $last)));
+
+			if($sm != null)
+			{
+				$ret[] = $id;
+			}
 		}
 	}
 	
 	
+	// search for new SeMails
+	
+	$maxdate = "1900-01-01 00:00:00";
+	
+	if(count($idlist) != 0)
+	{
+		// get the most recent dateactive of idlist
+		$max = Semail::find(array('conditions' => array("id in (?)", $idlist), 'order' => 'dateactive desc'));
+		if($max != null)
+			$maxdate = $max->dateactive->format('Y-m-d H:i:s');
+	}
+				
+	$listnew = Semail::find(array('conditions' => array("dateactive > ?", $maxdate)));
+
+	if($listnew != null)
+		$ret[] = "4242";
+		
+
 	return $ret;
 }
 
@@ -443,6 +491,13 @@ function ses_cmpfeeds($a, $b)
     }
 
     return ($a['dateactive'] > $b['dateactive']) ? -1 : 1;
+}
+
+
+// log a message
+function ses_dbg($msg)
+{
+	file_put_contents("dbg.log", "\r\n$msg\r\n", FILE_APPEND);
 }
 
 

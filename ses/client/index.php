@@ -149,14 +149,14 @@ cache_create();
 		
 		$( "#winlogin" ).dialog("option", "resizable", false);
 		$( "#winlogin" ).dialog("option", "width", 550);
-		$( "#winlogin" ).dialog("option", "height", 205);
+		$( "#winlogin" ).dialog("option", "height", 215);
 		$( "#winlogin" ).dialog("option", "position", [midx - 275, midy - 275]);
 		
 		// register window
 		showwin("winregister", "Register", "controllers/viewRegister.php");
 		$( "#winregister" ).dialog("option", "resizable", false);
 		$( "#winregister" ).dialog("option", "width", 550);
-		$( "#winregister" ).dialog("option", "height", 245);
+		$( "#winregister" ).dialog("option", "height", 260);
 		$( "#winregister" ).dialog("option", "position", [midx - 275, midy - 40]);
 
 
@@ -184,6 +184,8 @@ else
 		
 		allsemail = new Object(); // array of all open SeMails
 		mainsemail = new Object(); // array of all listed SeMails in the main window
+		
+		nbrsemails = 5;
 		
 		freqping = <?php echo $SES_FREQPING; ?>;
 		
@@ -222,7 +224,7 @@ else
 		// display a Public id
 		$(".copyid").live("click", function (e) {
 
-			var id = "<?php echo $SES_SERVER; ?>;" + $(this).attr("name").substring(3);
+			var id = $(this).attr("name").substring(3) + ";" + $(this).attr("id").substring(3);
 
 			showwin("winshare", "Share Public SeMail", "controllers/viewShare.php?id="+id, function() {
 				$( "#winshare" ).dialog("option", "resizable", false);

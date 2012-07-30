@@ -57,17 +57,20 @@ else
 	$msg = $r["msg"];
 	$messages = array();
 	
-	// json -> array of Message objects
-	foreach($msg as $m)
+	if($msg != "")
 	{
-		$nm = new Message();
-		$nm->id = $m["id"];
-		$nm->content = $m["content"];
-		$nm->address = $m["address"];
-		$nm->datesent = $m["datesent"];
-		$nm->semail_id = $m["semail_id"];
-		
-		$messages[] = $nm;
+		// json -> array of Message objects
+		foreach($msg as $m)
+		{
+			$nm = new Message();
+			$nm->id = $m["id"];
+			$nm->content = $m["content"];
+			$nm->address = $m["address"];
+			$nm->datesent = $m["datesent"];
+			$nm->semail_id = $m["semail_id"];
+			
+			$messages[] = $nm;
+		}
 	}
 }
 

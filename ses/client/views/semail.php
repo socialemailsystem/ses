@@ -26,7 +26,7 @@ if($semail)
 	// public id to share
 	if($type == "Public")
 	{
-		$share = "<a href='#' class='copyid' title='Copy public id to clipboard and share it !' name='cop$id'><span class='publicid'>Share it</span></a>";
+		$share = "<a href='#' class='copyid' title='Copy public id to clipboard and share it !' id='cop$id' name='ser$server'><span class='publicid'>Share it</span></a>";
 	}
 	
 	
@@ -144,8 +144,12 @@ if($semail)
 	
 		$("button").button();
 		
-
-		allsemail["<?php echo $id ?>"] = "<?php echo $lastdate; ?>";
+		var server = '<?php echo $server; ?>';
+		
+		if(server == '') // local
+			allsemail["<?php echo $id ?>"] = "<?php echo $lastdate; ?>";
+		else // remote
+			allsemail["<?php echo $id ?>"] = "REMOTE_" + server + ",<?php echo $lastdate; ?>";
 
 		
 		// send a message
@@ -155,8 +159,8 @@ if($semail)
 			var server = '<?php echo $server; ?>';
 			
 			callcontroller("controllers/actionSend.php?id=<?php echo $id ?>&msg="+encodeURIComponent($("#msg<?php echo $shortid; ?>").val())+"&server="+server, function() {
-				refreshmain();
 				updatewin("winsemail<?php echo $shortid ?>", "controllers/viewSemail.php?id=<?php echo $id ?>&server="+server);
+				refreshmain();
 			});
 			
 			$("#msg<?php echo $shortid; ?>").val("");

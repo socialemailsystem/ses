@@ -129,6 +129,7 @@ function bigping(freqping)
 		all[i] = mainsemail[i];
 	}
 	
+
 	
 	var idlist = '';
 	var lastlist = '';
@@ -138,7 +139,7 @@ function bigping(freqping)
 		idlist += (idlist == '' ? '' : ";") + i;
 		lastlist += (lastlist == '' ? '' : ";") + all[i];
 	}
-	
+
 
 	// ping !
 	$.ajax({
@@ -156,9 +157,17 @@ function bigping(freqping)
 			//alert("'"+msg+"'");
 			
 			json = jQuery.parseJSON(msg);
+		
+			// code for "new SeMail"
+			var ind = json.indexOf("4242");
+			if(ind != -1)
+			{
+				json[ind] = '';
+				refreshmain();
+			}
 
 			for(var i in json)
-			{
+			{	
 				// open SeMail received a new message
 				if(allsemail[json[i]] != null)
 				{
@@ -169,9 +178,24 @@ function bigping(freqping)
 					var msgarea = $("#msg" + shortid);
 					var msg = msgarea.val();
 					var pos = doGetCaretPosition(document.getElementById("msg" + shortid));
+					
+					
+					var server = '';
+					
+					var last = allsemail[json[i]];
+					
+					// remote
+					if(last.substring(0,7) == "REMOTE_")
+					{
+						last = last.substring(7);
+						var spl = last.split(",");
+						server = spl[0];
+						
+						//alert(server);
+					}
 
 					
-					updatewin(name, "controllers/viewSemail.php?id=" + json[i], function () {
+					updatewin(name, "controllers/viewSemail.php?id=" + json[i] + "&server=" + server, function () {
 						var msgarea = $("#msg" + shortid);
 						// restore message and caret position
 						msgarea.val(msg);
@@ -179,7 +203,7 @@ function bigping(freqping)
 						setCaretPosition(document.getElementById("msg" + shortid),pos);
 					});
 					
-					newmsg = true;
+					//newmsg = true;
 				}
 				
 				// listed SeMail received a new message
@@ -187,15 +211,15 @@ function bigping(freqping)
 				{
 					refreshmain();
 					
-					newmsg = true;
+					//newmsg = true;
 				}
 			}
 		}
 		
-		if(newmsg == true)
+		/*if(newmsg == true)
 		{
 			//shownotif("New message !", 2000);
-		}
+		}*/
 		
 		setTimeout('bigping('+freqping+');',freqping);
 	});
