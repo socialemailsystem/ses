@@ -5,7 +5,7 @@
 
 		<!-- address -->
 		<label for=loginaddr>Address: </label>
-		<input id=loginaddr name=loginaddr type=text autofocus value="" /><span class='afterfield'>@<?php echo $SES_SERVER; ?></span>
+		<input id=loginaddr name=loginaddr type=text autofocus value="" /><span class='afterfield'>::<?php echo $SES_SERVER; ?></span>
 
 		<br /><br />	
 

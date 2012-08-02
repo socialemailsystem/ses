@@ -13,13 +13,39 @@ function ses_init()
 {
 	# include the ActiveRecord library
 	require_once 'php-activerecord/ActiveRecord.php';
+	
+		// #!ck magic quotes
+		if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
+		{
+			function stripslashes_deep($value)
+			{
+				return is_array($value) ?
+					array_map('stripslashes_deep', $value) :
+					stripslashes($value);
+			}
+			$_POST    = array_map('stripslashes_deep', $_POST);
+			$_GET     = array_map('stripslashes_deep', $_GET);
+			$_COOKIE  = array_map('stripslashes_deep', $_COOKIE);
+			$_REQUEST = array_map('stripslashes_deep', $_REQUEST);
+		}
+	
+	
+		ActiveRecord\Config::initialize(function($cfg)
+		{
+			global $SES_SQL;
+			
+			try {
+				$cfg->set_model_directory(dirname(__FILE__).'/models/');
+				$cfg->set_connections(array('development' => $SES_SQL));
+				
+				$test = new Semail(); // avoid displaying the connection informations if there is an error...
+				
+			} catch (Exception $e) {
+				die("Database error");
+			}
 
-	ActiveRecord\Config::initialize(function($cfg)
-	{
-		global $SES_SQL;
-		$cfg->set_model_directory(dirname(__FILE__).'/models/');
-		$cfg->set_connections(array('development' => $SES_SQL));
-	});
+		});
+	
 }
 
 
@@ -797,6 +823,7 @@ function ses_message($key, $sender, $id, $message, $datesent)
 	$io = ses_isowner($sender, $id);
 	$type = ses_gettype($id);
 	$ro = ses_getreadonly($id);
+
 	if((!$ro || $io) && ($ip || $type == 0))
 	{
 		$sm = Semail::find($id);
@@ -817,6 +844,7 @@ function ses_query_message($server, $key, $sender, $id, $message, $datesent)
 		
 	$message = urlencode($message);
 	$datesent = urlencode($datesent);
+
 	$url = "http://$server/ses/server/message?id=$id&key=$key&sender=$sender&message=$message&datesent=$datesent";
 
 	return file_get_contents($url);

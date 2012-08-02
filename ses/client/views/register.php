@@ -5,7 +5,7 @@
 
 		<!-- address -->
 		<label for=registeraddr>Address: </label>
-		<input id=registeraddr name=registeraddr type=text autofocus value="" /><span class='afterfield'>@<?php echo $SES_SERVER; ?></span>
+		<input id=registeraddr name=registeraddr type=text autofocus value="" /><span class='afterfield'>::<?php echo $SES_SERVER; ?></span>
 
 		<br /><br />	
 

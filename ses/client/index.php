@@ -186,6 +186,7 @@ else
 		mainsemail = new Object(); // array of all listed SeMails in the main window
 		
 		nbrsemails = 5;
+		nbrfeeds = 5;
 		
 		freqping = <?php echo $SES_FREQPING; ?>;
 		
