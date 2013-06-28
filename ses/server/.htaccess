@@ -1,0 +1,6 @@
+Options +FollowSymlinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !index.php(.*)$
+RewriteCond %{REQUEST_FILENAME} !tests.php(.*)$
+RewriteRule ^(.*)$   index.php?action=$1 [QSA,L,NC]

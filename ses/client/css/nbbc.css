@@ -1,0 +1,33 @@
+/* Add a dashed underline to acronyms. */
+span.acronym { border-bottom:1px dashed green; }
+span.acronym:hover { color: green; border-bottom:1px dashed lightgreen; }
+
+/* Make spoilers invisible, so that you need to select them with the mouse. */
+span.spoiler { background-color: black; color: black; }
+
+/* Align columns to the top, and add some space between them. */
+table.bbcode_columns { border-collapse: collapse;
+    margin-top: 1em; margin-bottom: 1em; }
+table.bbcode_columns td.bbcode_column { padding: 0 1em; vertical-align: top;}
+table.bbcode_columns td.bbcode_firstcolumn { border-left: 0; padding-left: 0; }
+
+/* Wrap quotes in a big blue box. */
+div.bbcode_quote { /*border: 1px solid blue;*/ margin: 0.5em 0; }
+div.bbcode_quote_head { background-color: #fdfabb; /*color: white;*/
+    font-weight: bold; padding: 0.25em 0.5em; }
+	
+div.bbcode_quote_head a:link { color: yellow; }
+div.bbcode_quote_head a:visited { color: yellow; }
+div.bbcode_quote_head a:hover { color: white; text-decoration: underline; }
+div.bbcode_quote_head a:active { color: white; text-decoration: underline; }
+
+div.bbcode_quote_body { background-color: #fcfcfc;
+    color: black; padding: 0.5em 1em; font-style: italic; /*position: relative; top: -10px;*/ }
+
+/* Wrap code in a big blue box. */
+div.bbcode_code { /*border: 1px solid blue;*/ margin: 0.5em 0; }
+div.bbcode_code_head { background-color: #fdfabb; /*color: white;*/
+    font-weight: bold; padding: 0.25em 0.5em; }
+div.bbcode_code_body { background-color: #fcfcfc; color: black;
+    font: 10pt monospace; padding: 0.5em 1em; /position: /*relative; top: -10px;*/ }
+	
