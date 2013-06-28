@@ -1,7 +1,7 @@
 Social eMail System
 ===
 Version 0.1
-==
+
 
 
 
@@ -25,8 +25,12 @@ http://www.gnu.org/licenses/agpl-3.0.en.html
 
 
 1) Get a copy of the repository on GitHub : https://github.com/socialemailsystem/ses .
+
 2) Upload the ses/ directory.
+
 3) Edit the ses/server/config.php to configure your database access.
+
 4) Import ses_empty.sql with phpMyAdmin.
+
 5) Enjoy.
 
