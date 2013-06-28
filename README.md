@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/agpl-3.0.en.html
 
 2) Upload the ses/ directory.
 
-3) Edit the ses/server/config.php to configure your database access.
+3) Edit ses/server/config.php to configure your database access.
 
 4) Import ses_empty.sql with phpMyAdmin.
 
