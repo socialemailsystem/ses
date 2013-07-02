@@ -7,12 +7,12 @@ Version 0.1
 
 *** Beyond social network and mail ***
 
-
 SeS is intended to be a new paradigm in Internet communication.
-It tries to take the best of email, social networks and Instant messaging to bring users a whole new web social experience.
-SeS is a fully free, open-source and decentralized social network, that’s to say there isn’t a huge farm of servers ruled by one big company that owns all your data.
-Everybody can install its own SeS server in a minute - you only need a standard Linux / Apache / MySQL / PHP host. Or, you can just register on an existing server and have fun.
-In any way, all SeS servers are connected into the SeS Network, and you can communicate with people from any server.
+It tries to take the best of email, social networks and instant messaging to bring users a whole new web social experience.
+SeS is a completely free, open-source and decentralized social network, that is to say it doesn't rely on a huge farm of servers ruled by one big company who owns all your data.
+You can install your own SeS server in minutes with just a standard Linux / Apache / MySQL / PHP host, or you can simply register on an existing server and have fun.
+All SeS servers are connected into the SeS Network, and you can communicate with anyone regardless of their server.
+
 
 
 SeS is a Free Software, licensed under the GNU Affero General Public Licence Version 3.
